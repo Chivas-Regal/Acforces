@@ -2,6 +2,9 @@
 
 **本项目在疯狂迭代与测试中**
 
+使用案例（视频）：  
+[![](https://img.youtube.com/vi/onIQwtgDd_M/0.jpg)](https://youtu.be/onIQwtgDd_M)
+
 ## 配置方法
 
 1.进入本目录内运行 `pip install -e .`  
