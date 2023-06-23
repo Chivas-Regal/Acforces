@@ -205,7 +205,7 @@ def handle_Submit (filename, prob_id):
         if 'Wrong' in status:
             print('%s> ❗ \033[31m%s\033[0m'%(info_data['username'], status), end='\r')
         elif 'passed' in status or 'Accept' in status:
-            print('%s> 🎉 \033[31m%s\033[0m'%(info_data['username'], status), end='\r')
+            print('%s> 🎉 \033[32m%s\033[0m'%(info_data['username'], status), end='\r')
         else:
             print(info_data['username'] + '> ' + status, end='\r')
         if fir_submit['waiting'] == 'false':
