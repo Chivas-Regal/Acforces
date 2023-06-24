@@ -156,7 +156,7 @@ def handle_Test (filename, prob_id, sample_id):
     ext = filename.rsplit('.')[1]
     filename_without_ext = filename.rsplit('.')[0]
     if ext == 'cpp':
-        cmd = 'clang++ %s -o %s' % (filename, filename_without_ext)
+        cmd = 'g++ %s -o %s' % (filename, filename_without_ext)
         for s in cpp:
             cmd += ' %s'%s
         os.system(cmd)
