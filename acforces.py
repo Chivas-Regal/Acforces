@@ -61,34 +61,20 @@ def handle_Login (username, password):
     print("%s> \033[33mLogining...\033[0m"%info_data['username'])
     global browser
 
-    import requests
     from robobrowser import RoboBrowser
-    import pickle
 
-    # 本工程目录下存在 cookie.pkl 文件，就使用 cookie 登录
-    #                          否则  ，使用账密登录
-    if os.path.isfile('%s/cookie.pkl'%dir_path):
-        with open('%s/cookie.pkl'%dir_path, 'rb') as f:
-            cookies = pickle.load(f)
-        browser = RoboBrowser(parser='lxml')
-        browser.session.cookies.update(cookies)
-        browser.open('https://codeforces.com')
-    else:
-        browser = RoboBrowser(history=True, parser='lxml')
-        browser.open('https://codeforces.com/enter')
-        enter_form = browser.get_form('enterForm')
-        enter_form['handleOrEmail'] = username
-        enter_form['password'] = password
-        browser.submit_form(enter_form)
+    browser = RoboBrowser(history=True, parser='lxml')
+    browser.open('https://codeforces.com/enter')
+    enter_form = browser.get_form('enterForm')
+    enter_form['handleOrEmail'] = username
+    enter_form['password'] = password
+    browser.submit_form(enter_form)
 
     # 侧边栏是否存在用户名，存在则表示登陆成功
     div_sidbar_tags = browser.find_all('div', {'class': 'caption titled'})
     for div_sidbar_tag in div_sidbar_tags:
         if username in div_sidbar_tag.text:
-            # 登录成功后再把 cookie 写入 cookie.pkl 中
-            with open('%s/cookie.pkl'%dir_path, 'wb') as f:
-                pickle.dump(browser.session.cookies, f)
-                return 1
+            return 1
     print('\033[31mError: \033[0m[{0}] Login failed!'.format(username))
     return 0
 

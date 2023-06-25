@@ -13,7 +13,7 @@
 
 1.进入本目录内运行 `pip install -e .`  
   
-2.修改 `info.json` 内的 `username` 和 `password`  （想多次更换账号的同学每次更换时需要将本目录下的 `cookie.pkl` 删掉
+2.修改 `info.json` 内的 `username` 和 `password`
   
 然后就可以使用了  
 
