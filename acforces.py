@@ -81,16 +81,16 @@ def handle_Login (username, password):
         enter_form['password'] = password
         browser.submit_form(enter_form)
 
-    # 侧边栏，第二块内是否存在用户名，存在则表示登陆成功
+    # 侧边栏是否存在用户名，存在则表示登陆成功
     div_sidbar_tags = browser.find_all('div', {'class': 'caption titled'})
-    if len(div_sidbar_tags) >= 2 and username in div_sidbar_tags[1].text:
-        # 登录成功后再把 cookie 写入 cookie.pkl 中
-        with open('%s/cookie.pkl'%dir_path, 'wb') as f:
-            pickle.dump(browser.session.cookies, f)
-        return 1
-    else:
-        print('\033[31mError: \033[0m[{0}] Login failed!'.format(username))
-        return 0
+    for div_sidbar_tag in div_sidbar_tags:
+        if username in div_sidbar_tag.text:
+            # 登录成功后再把 cookie 写入 cookie.pkl 中
+            with open('%s/cookie.pkl'%dir_path, 'wb') as f:
+                pickle.dump(browser.session.cookies, f)
+                return 1
+    print('\033[31mError: \033[0m[{0}] Login failed!'.format(username))
+    return 0
 
 # 从特定题目中加载样例
 def handle_LoadSamples (prob_id):
