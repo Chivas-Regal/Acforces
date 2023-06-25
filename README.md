@@ -1,5 +1,3 @@
-<img src="https://cr-demo-blog-1308117710.cos.ap-nanjing.myqcloud.com/chivas-regal/%E5%82%8D%E6%99%9A-%E6%99%B4%E6%9C%97.png" align="center" width='400px'>
-
 ![](https://img.shields.io/badge/status-updating-green)
 
 <h1 align='center'>Codeforces 命令行小工具</h1>
