@@ -38,7 +38,7 @@
 `acforces hello.cpp 1843 A s`
 进行交题  
 
-![20230626203131](https://raw.githubusercontent.com/Tequila-Avage/PicGoBeds/master/20230626203131.png)
+![20230626210306](https://raw.githubusercontent.com/Tequila-Avage/PicGoBeds/master/20230626210306.png)
   
 ![20230626203036](https://raw.githubusercontent.com/Tequila-Avage/PicGoBeds/master/20230626203036.png)
   
