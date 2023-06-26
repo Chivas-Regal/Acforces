@@ -9,7 +9,7 @@ import ssl
 import sys 
 import os
 
-# 命令行参数
+# 命令行参数（自行修改）
 cpp = [
     "-std=c++11",
     '-lpthread'
@@ -23,6 +23,11 @@ dir_path = os.path.abspath(os.path.dirname(cur_path) + os.path.sep + ".")
 prj_path = os.path.abspath(os.path.dirname(dir_path) + os.path.sep + ".")
 psn_path = os.getcwd()
 browser = None
+
+login_once = False
+
+# 用户信息 ('username', 'password', 'contest_id')
+info_data = {}
 
 from html.parser import HTMLParser
 
@@ -53,14 +58,242 @@ class SampParser(HTMLParser):
         if self.in_pre:
             self.sam_in_text.write(data.encode('utf-8'))
 
+class RankParser(HTMLParser):
+    def __init__(self):
+        HTMLParser.__init__(self)
+        self.conti = False
+        self.in_td = False
+        self.td_str = ''
+        self.first_tr = True
+        self.row_lst = []
+        self.is_myself = False
+    def handle_starttag(self, tag, attrs):
+        if self.conti:
+            return
+        if tag == 'td' or tag == 'th':
+            self.in_td = True
+    def handle_endtag(self, tag):
+        if tag == 'tr':
+            if not self.conti:
+                if self.first_tr:
+                    self.first_tr = False
+                    for i in range(0, len(self.row_lst)):
+                        if i == 0:
+                            print('+----------', end='')
+                        elif i == 1:
+                            print('+------------------', end='')
+                        elif i == 2:
+                            print('+-----', end='')
+                        elif i == 3:
+                            print('+-----------', end='')
+                        else:
+                            print('+-----', end='')
+                    print('+')
+                for i in range(0, len(self.row_lst)):
+                    if self.is_myself:
+                        print('\033[42m',end='')
+                    if i == 0:
+                        print('|{:^10}'.format(self.row_lst[i]), end='')
+                    elif i == 1:
+                        print('|{:^18}'.format(self.row_lst[i]), end='')
+                    elif i == 2:
+                        print('|{:^5}'.format(self.row_lst[i]), end='')
+                    elif i == 3:
+                        print('|{:^11}'.format(self.row_lst[i]), end='')
+                    else:
+                        print('|{:^5}'.format(self.row_lst[i]), end='')
+                print('|',end='')
+                if self.is_myself:
+                    print('\033[0m',end='')
+                print()
+                for i in range(0, len(self.row_lst)):
+                    if i == 0:
+                        print('+----------', end='')
+                    elif i == 1:
+                        print('+------------------', end='')
+                    elif i == 2:
+                        print('+-----', end='')
+                    elif i == 3:
+                        print('+-----------', end='')
+                    else:
+                        print('+-----', end='')
+                print('+')
+                
+            self.row_lst = []
+            self.conti = False
+            self.is_myself = False
+        if self.conti:
+            return
+        if tag == 'td' or tag == 'th':
+            self.in_td = False
+            self.td_str = self.td_str.strip()
+            if len(self.td_str) == 0:
+                self.row_lst.append(self.td_str)
+            elif self.td_str[0] == '+' or self.td_str[0] == '-' or '\n' in self.td_str or '\r' in self.td_str:
+                self.row_lst.append(self.td_str.split('\n')[0].split('\r')[0])
+            else:
+                self.row_lst.append(self.td_str)
+            self.td_str = ''
+    def handle_data(self, data):
+        if self.conti:
+            return
+        if self.in_td == True:
+            if info_data['username'] in data:
+                self.is_myself = True
+            if '*' in data and len(data) != 1:
+                self.conti = True
+            elif 'Accept' in data:
+                self.conti = True
+            else:
+                self.td_str += data
+# https://codeforces.com/contest/<contest_id> 的解析
+class IndexParser(HTMLParser):
+    def __init__(self):
+        HTMLParser.__init__(self)
+        self.accepted_problem = False
+        self.row_lst = []
+        self.td_str = ''
+        self.in_td = False
+        self.in_script = False
+        self.first_line = True
+    def handle_starttag(self, tag, attrs):
+        if tag == 'td' or tag == 'th':
+            self.in_td = True
+        if tag == 'tr' and ('class', 'accepted-problem') in attrs:
+            self.accepted_problem = True  
+        if tag == 'script':
+            self.in_script = True          
+    def handle_endtag(self, tag):
+        if tag == 'tr':
+            if self.first_line:
+                print('+-----+--------------------------------------------------+---------+')
+                self.first_line = False
+            if self.accepted_problem:
+                print('\033[42m', end='')
+            for i in range(0, len(self.row_lst)):
+                if i == 2:
+                    continue
+                if i == 0:
+                    print('|{:^5}'.format(self.row_lst[i]), end='')
+                elif i == 1:
+                    print('|{:^50}'.format(self.row_lst[i]), end='')
+                else:
+                    print('| {:<8}'.format(self.row_lst[i]), end='')
+            print('|', end='')
+            if self.accepted_problem:
+                print('\033[0m', end='')
+            print('\n+-----+--------------------------------------------------+---------+')
+            self.accepted_problem = False
+            self.row_lst = []
+        elif tag == 'td' or tag == 'th':
+            self.td_str = self.td_str.strip()
+            if '\r' in self.td_str or '\n' in self.td_str:
+                self.td_str = self.td_str.split('\n')[0].split('\r')[0]
+            self.row_lst.append(self.td_str)
+            self.td_str = ''
+            self.in_td = False
+        elif tag == 'script':
+            self.in_script = False
+    def handle_data(self, data):
+        if self.in_td and not self.in_script:
+            self.td_str += data
 
-# 用户信息 ('username', 'password', 'contest_id')
-info_data = {}
+# https://codeforces.com/contest/<contest_id> 的解析
+class SubmissionParser(HTMLParser):
+    def __init__(self):
+        HTMLParser.__init__(self)
+        self.accepted_problem = False
+        self.row_lst = []
+        self.td_str = ''
+        self.in_td = False
+        self.in_script = False
+        self.first_line = True
+    def handle_starttag(self, tag, attrs):
+        if tag == 'td' or tag == 'th':
+            self.in_td = True
+        if tag == 'script':
+            self.in_script = True          
+    def handle_endtag(self, tag):
+        if tag == 'tr':
+            if self.first_line:
+                for i in range(0, len(self.row_lst)):
+                    if i == 2:
+                        continue
+                    if i == 0:
+                        print('+----------', end='')
+                    elif i <= 2:
+                        print('+--------------------', end='')
+                    elif i == 3:
+                        print('+---', end='')
+                    elif i == 4:
+                        print('+---------------', end='')
+                    elif i == 5:
+                        print('+-----------------------------------', end='')
+                    else:
+                        print('+---------', end='')
+                print('+')
+                self.first_line = False
+            if self.accepted_problem:
+                print('\033[42m', end='')
+            for i in range(0, len(self.row_lst)):
+                if i == 2:
+                    continue
+                if i == 0:
+                    print('|{:^10}'.format(self.row_lst[i]), end='')
+                elif i <= 2:
+                    print('|{:^20}'.format(self.row_lst[i]), end='')
+                elif i == 3:
+                    print('|{:^3}'.format(self.row_lst[i][0]), end='')
+                elif i == 4:
+                    print('|{:^15}'.format(self.row_lst[i]), end='')
+                elif i == 5:
+                    print('|{:^35}'.format(self.row_lst[i]), end='')
+                else:
+                    print('| {:^8}'.format(self.row_lst[i]), end='')
+            print('|', end='')
+            if self.accepted_problem:
+                print('\033[0m', end='')
+            print()
+            for i in range(0, len(self.row_lst)):
+                if i == 2:
+                    continue
+                if i == 0:
+                    print('+----------', end='')
+                elif i <= 2:
+                    print('+--------------------', end='')
+                elif i == 3:
+                    print('+---', end='')
+                elif i == 4:
+                    print('+---------------', end='')
+                elif i == 5:
+                    print('+-----------------------------------', end='')
+                else:
+                    print('+---------', end='')
+            print('+')
+            self.accepted_problem = False
+            self.row_lst = []
+        elif tag == 'td' or tag == 'th':
+            self.td_str = self.td_str.strip()
+            if '\r' in self.td_str or '\n' in self.td_str:
+                self.td_str = self.td_str.split('\n')[0].split('\r')[0]
+            if 'Accepted' in self.td_str or 'passed' in self.td_str:
+                self.accepted_problem = True
+            self.row_lst.append(self.td_str)
+            self.td_str = ''
+            self.in_td = False
+        elif tag == 'script':
+            self.in_script = False
+    def handle_data(self, data):
+        if self.in_td and not self.in_script:
+            self.td_str += data
+
 
 def handle_Login (username, password):
     print("%s> \033[33mLogining...\033[0m"%info_data['username'])
     global browser
+    global login_once
 
+    import requests
     from robobrowser import RoboBrowser
 
     browser = RoboBrowser(history=True, parser='lxml')
@@ -74,6 +307,7 @@ def handle_Login (username, password):
     div_sidbar_tags = browser.find_all('div', {'class': 'caption titled'})
     for div_sidbar_tag in div_sidbar_tags:
         if username in div_sidbar_tag.text:
+            login_once = True
             return 1
     print('\033[31mError: \033[0m[{0}] Login failed!'.format(username))
     return 0
@@ -81,15 +315,12 @@ def handle_Login (username, password):
 # 从特定题目中加载样例
 def handle_LoadSamples (prob_id):
     # 先登录，不然进入正常的比赛了话样例出不来
-    if not handle_Login(info_data['username'], info_data['password']):
-        print("%s> Login error: username or password wrong"%info_data['username'])
-        return
-    else:
-        global browser
-        browser = RoboBrowser(history=True, parser='lxml')
+    if not login_once:
+       if not  handle_Login(info_data['username'], info_data['password']):
+            print("%s> Login error: username or password wrong"%info_data['username'])
+            return
 
     browser.open('https://codeforces.com/contest/%s/problem/%s' % (info_data['contest_id'], prob_id))
-
     # 文件夹没有就建
     if not os.path.exists('%s'%info_data['contest_id']):
         os.mkdir('%s'%info_data['contest_id'])
@@ -226,9 +457,10 @@ def handle_Test (filename, prob_id, sample_id):
 
 # 交题
 def handle_Submit (filename, prob_id):
-    if not handle_Login(info_data['username'], info_data['password']):
-        print("%s> Login error: username or password wrong"%info_data['username'])
-        return
+    if not login_once:
+       if not  handle_Login(info_data['username'], info_data['password']):
+            print("%s> Login error: username or password wrong"%info_data['username'])
+            return
         
     print("%s> \033[33mUploading file %s, please wait....\033[0m"%(info_data['username'], filename))
     browser.open('https://codeforces.com/contest/%s/problem/%s'%(info_data['contest_id'], prob_id))
@@ -267,12 +499,69 @@ def handle_Submit (filename, prob_id):
             break
         time.sleep(0.5)
 
+def handle_Rankshow ():
+    # 先登录，不然进入正常的比赛了话样例出不来
+    if not login_once:
+       if not  handle_Login(info_data['username'], info_data['password']):
+            print("%s> Login error: username or password wrong"%info_data['username'])
+            return
 
+    browser.open('https://codeforces.com/contest/%s/standings/friends/true' % (info_data['contest_id']))
+    table = browser.find('table', {'class', 'standings'})
+    rp = RankParser()
+    rp.feed('%s'%table)
+
+def handle_Problemshow ():
+    # 先登录，不然进入正常的比赛了话样例出不来
+    if not login_once:
+       if not  handle_Login(info_data['username'], info_data['password']):
+            print("%s> Login error: username or password wrong"%info_data['username'])
+            return
+
+    browser.open('https://codeforces.com/contest/%s'%info_data['contest_id'])
+    table = browser.find('table', {'class', 'problems'})
+    ip = IndexParser()
+    ip.feed('%s'%table)
+
+def handle_Submissionshow ():
+    # 先登录，不然进入正常的比赛了话样例出不来
+    if not login_once:
+       if not  handle_Login(info_data['username'], info_data['password']):
+            print("%s> Login error: username or password wrong"%info_data['username'])
+            return
+
+    browser.open('https://codeforces.com/contest/%s/my'%info_data['contest_id'])
+    for table in browser.find_all('table', {'class', 'status-frame-datatable'}):
+        ip = SubmissionParser()
+        ip.feed('%s'%table)
+
+def handle_oneSubmission (contest_id, submission_id):
+    # 先登录，不然进入正常的比赛了话样例出不来
+    if not login_once:
+       if not  handle_Login(info_data['username'], info_data['password']):
+            print("%s> Login error: username or password wrong"%info_data['username'])
+            return
+    
+    browser.open('https://codeforces.com/contest/%s/submission/%s'%(contest_id, submission_id))
+    # print(browser.find('html'))
+    code = browser.find('pre', {'class', 'program-source'})
+    print('// ================================ Source Code ')
+    print(code.text)
+
+# acforces 
+#     - <filename> <contest_id> <question_id>
+#                                             - s
+#                                             - t <samp_name> / <>
+#     - race <contest_id>
+#     - r <contest_id>
+#     - p <contest_id>
+#     - s <contest_id>
+#     - l <contest_id> <submission_id>
 @click.command()
-@click.argument('filename')
-@click.argument('contest_id')
-@click.argument('problem_id')
-@click.argument('opt')
+@click.argument('filename',required=False, default=None)
+@click.argument('contest_id',required=False, default=None)
+@click.argument('problem_id',required=False, default=None)
+@click.argument('opt',required=False, default=None)
 @click.argument('sample_id',required=False, default=None)
 def main (filename, contest_id, problem_id, opt, sample_id):
     global info_data
@@ -281,10 +570,30 @@ def main (filename, contest_id, problem_id, opt, sample_id):
     info_data = json.load(info_file)
     info_data['contest_id'] = contest_id
 
-    if opt == 's':
-        handle_Submit(filename, problem_id)
-    elif opt == 't':
-        handle_Test(filename, problem_id, sample_id)
+    if filename and contest_id and problem_id and opt:
+        if opt == 's':
+            handle_Submit(filename, problem_id)
+        elif opt == 't':
+            handle_Test(filename, problem_id, sample_id)
+    elif filename and filename == 'r':
+        handle_Rankshow()
+    elif filename and filename == 'p':
+        handle_Problemshow()
+    elif filename and filename == 's':
+        handle_Submissionshow()
+    elif filename == 'l' and contest_id and problem_id:
+        handle_oneSubmission(contest_id, problem_id)
+    elif filename == 'race':
+        if not login_once:
+            if not handle_Login(info_data['username'], info_data['password']):
+                print("%s> Login error: username or password wrong"%info_data['username'])
+                return
+        browser.open('https://codeforces.com/contest/%s'%info_data['contest_id'])
+        for i in browser.find_all('td', {'class', 'id'}):
+            prob_id = ('%s'%i.text).strip()
+            handle_LoadSamples(prob_id)
+
+
 
     """数据备份"""
     info_json = json.dumps(info_data, sort_keys=False, indent=4, separators=(',', ': '))
