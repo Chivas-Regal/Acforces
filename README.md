@@ -1,5 +1,4 @@
 <h1 align='center'>Codeforces 命令行小工具</h1>
-
 ![](https://img.shields.io/badge/status-updating-green)
 
 **本项目在疯狂迭代与测试中**   
@@ -31,16 +30,16 @@
 
 那么我们写好后就执行命令   
 `acforces hello.cpp 1843 A t`  
-进行测试   
+进行测试     
 
 ![20230626202922](https://raw.githubusercontent.com/Tequila-Avage/PicGoBeds/master/20230626202922.png)
   
-测试完毕后想要交题就执行  
+测试完毕后想要交题就执行   
 `acforces hello.cpp 1843 A s`
 进行交题  
 
 ![20230626203131](https://raw.githubusercontent.com/Tequila-Avage/PicGoBeds/master/20230626203131.png)
-
+  
 ![20230626203036](https://raw.githubusercontent.com/Tequila-Avage/PicGoBeds/master/20230626203036.png)
   
 其中测试命令会在本目录下根据题目的样例生成一个 `1843/A/sample1.in` 和 `1843/A/sample1.out`  
@@ -57,17 +56,23 @@
 - 支持自己提交列表的展示
 - 支持通过编号输出自己对应提交代码
 
-**首页过题人数展示**（其中绿色的是自己过了的题）  
-`acforces p 1843`
+**首页过题人数展示**（其中绿色的是自己过了的题）    
+`acforces p 1843`  
+
 ![20230626203332](https://raw.githubusercontent.com/Tequila-Avage/PicGoBeds/master/20230626203332.png)
 
-**比赛好友区榜单展示**（其中绿色的是自己）
-`acforces r 1843`  
+**比赛好友区榜单展示**（其中绿色的是自己）  
+`acforces r 1843`      
+
 ![82c030efa6a3601d14697174ecbc71da_0](https://raw.githubusercontent.com/Tequila-Avage/PicGoBeds/master/82c030efa6a3601d14697174ecbc71da_0.png)
   
 **自己的提交列表展示**（其中绿色的是自己的 AC 提交）  
+`acforces s 1708`      
+  
 ![20230626204052](https://raw.githubusercontent.com/Tequila-Avage/PicGoBeds/master/20230626204052.png)  
 
 可以通过上面显示的编号来显示对应的提交代码  
-**通过编号输出自己对应提交代码**  
+**通过编号输出自己对应提交代码**    
+`acforces l 1708 211132672`  
+
 ![c8a1b85c13fb26c65a2598af70bb618e_0](https://raw.githubusercontent.com/Tequila-Avage/PicGoBeds/master/c8a1b85c13fb26c65a2598af70bb618e_0.png)
