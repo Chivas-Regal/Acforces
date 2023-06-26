@@ -32,15 +32,15 @@
 `acforces hello.cpp 1843 A t`  
 进行测试     
 
-![20230626202922](https://cr-demo-blog-1308117710.cos.ap-nanjing.myqcloud.com/chivas-regal/20230626202922.png)
+![20230626202922](https://raw.githubusercontent.com/Tequila-Avage/PicGoBeds/master/20230626202922.png)
   
 测试完毕后想要交题就执行   
 `acforces hello.cpp 1843 A s`
 进行交题  
 
-![20230626210306](https://cr-demo-blog-1308117710.cos.ap-nanjing.myqcloud.com/chivas-regal/20230626210306.png)
+![20230626210306](https://raw.githubusercontent.com/Tequila-Avage/PicGoBeds/master/20230626210306.png)
   
-![20230626203036](https://cr-demo-blog-1308117710.cos.ap-nanjing.myqcloud.com/chivas-regal/20230626203036.png)
+![20230626203036](https://raw.githubusercontent.com/Tequila-Avage/PicGoBeds/master/20230626203036.png)
   
 其中测试命令会在本目录下根据题目的样例生成一个 `1843/A/sample1.in` 和 `1843/A/sample1.out`  
 对于子目录 `1843/A/` 下面的样例也可以手动添加，但注意要输入输出同名，比如 `1843/A/0.in` 与 `1843/A/0.out`   
@@ -59,20 +59,20 @@
 **首页过题人数展示**（其中绿色的是自己过了的题）    
 `acforces p 1843`  
 
-![20230626203332](https://cr-demo-blog-1308117710.cos.ap-nanjing.myqcloud.com/chivas-regal/20230626203332.png)
+![20230626203332](https://raw.githubusercontent.com/Tequila-Avage/PicGoBeds/master/20230626203332.png)
 
 **比赛好友区榜单展示**（其中绿色的是自己）  
 `acforces r 1843`      
 
-![5ab6ad208f29e327dcbcd5f5be43bc05](https://cr-demo-blog-1308117710.cos.ap-nanjing.myqcloud.com/chivas-regal/5ab6ad208f29e327dcbcd5f5be43bc05.png)
+![82c030efa6a3601d14697174ecbc71da_0](https://raw.githubusercontent.com/Tequila-Avage/PicGoBeds/master/82c030efa6a3601d14697174ecbc71da_0.png)
   
 **自己的提交列表展示**（其中绿色的是自己的 AC 提交）  
 `acforces s 1708`      
   
-![20230626204052](https://cr-demo-blog-1308117710.cos.ap-nanjing.myqcloud.com/chivas-regal/20230626204052.png)
+![20230626204052](https://raw.githubusercontent.com/Tequila-Avage/PicGoBeds/master/20230626204052.png)  
 
 可以通过上面显示的编号来显示对应的提交代码  
 **通过编号输出自己对应提交代码**    
 `acforces l 1708 211132672`  
 
-![](https://cr-demo-blog-1308117710.cos.ap-nanjing.myqcloud.com/chivas-regal/c8a1b85c13fb26c65a2598af70bb618e.png)
+![c8a1b85c13fb26c65a2598af70bb618e_0](https://raw.githubusercontent.com/Tequila-Avage/PicGoBeds/master/c8a1b85c13fb26c65a2598af70bb618e_0.png)
