@@ -597,7 +597,7 @@ def main (filename, contest_id, problem_id, opt, sample_id):
 
 
 
-    """数据备份"""
+    """数据备份，进入info.json"""
     info_json = json.dumps(info_data, sort_keys=False, indent=4, separators=(',', ': '))
     info_file = open(dir_path + '/info.json', 'w')
     info_file.write(info_json)
